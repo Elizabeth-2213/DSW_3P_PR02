@@ -1,3 +1,5 @@
+using DSW_3P_PR02.Data;
+using Microsoft.EntityFrameworkCore;
 using DSW_3P_PR02.Repositories;
 using DSW_3P_PR02.Services;
 
@@ -5,7 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
-builder.Services.AddSingleton<IEventoRepository, EventoJsonRepository>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException(
+            "Falta configurar ConnectionStrings:DefaultConnection.")
+    ));
+
+builder.Services.AddScoped<IEventoRepository, EventoSQLRepository>();
 builder.Services.AddScoped<IEventoService, EventoService>();
 
 var app = builder.Build();
